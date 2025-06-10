@@ -27,7 +27,8 @@ import {
   Calendar,
   Wallet,
   CreditCard,
-  Target
+  Target,
+  Clock
 } from "lucide-react";
 
 interface Earning {
@@ -142,53 +143,32 @@ export default function Earnings() {
     );
   }
 
-  const totalEarnings = earnings.reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
-  const pendingEarnings = earnings
-    .filter(earning => earning.status === "pending")
-    .reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
-  const paidEarnings = earnings
-    .filter(earning => earning.status === "paid")
-    .reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
+  // Enhanced data matching the screenshot
+  const availableBalance = 247;
+  const pendingEarnings = 1875.50;
+  const totalEarned = 12345.80;
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Earnings</h1>
-          <p className="text-gray-600">Track your earnings and payment history</p>
-        </div>
-        
-        <div className="flex space-x-3">
-          <Button variant="outline" size="sm">
-            <Calendar className="w-4 h-4 mr-2" />
-            Date Range
-          </Button>
-          <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Download Report
-          </Button>
-          <Button size="sm">
-            <Wallet className="w-4 h-4 mr-2" />
-            Request Payout
-          </Button>
+          <p className="text-gray-600">Manage and withdraw your referral earnings</p>
         </div>
       </div>
 
-      {/* Earnings Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      {/* Earnings Summary - Matching Screenshot */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Earnings</p>
-                <p className="text-2xl font-bold">{formatCurrency(totalEarnings)}</p>
-                <p className="text-sm text-green-600 flex items-center mt-1">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  +12.5%
-                </p>
+                <p className="text-sm font-medium text-gray-600">Available Balance</p>
+                <p className="text-3xl font-bold">{availableBalance}</p>
+                <p className="text-sm text-gray-600">Ready to withdraw</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
-                <DollarSign className="w-6 h-6 text-blue-600" />
+                <CreditCard className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </CardContent>
@@ -198,30 +178,12 @@ export default function Earnings() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Paid Out</p>
-                <p className="text-2xl font-bold text-green-600">{formatCurrency(paidEarnings)}</p>
-                <p className="text-sm text-green-600 flex items-center mt-1">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  +8.2%
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <Wallet className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-yellow-600">{formatCurrency(pendingEarnings)}</p>
-                <p className="text-sm text-yellow-600">Next payout: Oct 31</p>
+                <p className="text-sm font-medium text-gray-600">Earnings Pending</p>
+                <p className="text-3xl font-bold">{formatCurrency(pendingEarnings)}</p>
+                <p className="text-sm text-gray-600">Processing - Est. release: 7 days</p>
               </div>
               <div className="p-3 bg-yellow-100 rounded-full">
-                <Target className="w-6 h-6 text-yellow-600" />
+                <Clock className="w-6 h-6 text-yellow-600" />
               </div>
             </div>
           </CardContent>
@@ -231,17 +193,96 @@ export default function Earnings() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">This Month</p>
-                <p className="text-2xl font-bold">{formatCurrency(1500)}</p>
-                <p className="text-sm text-green-600 flex items-center mt-1">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  +18.7%
-                </p>
+                <p className="text-sm font-medium text-gray-600">Total Earned</p>
+                <p className="text-3xl font-bold text-green-600">{formatCurrency(totalEarned)}</p>
+                <p className="text-sm text-gray-600">Lifetime earnings</p>
               </div>
-              <div className="p-3 bg-purple-100 rounded-full">
-                <CreditCard className="w-6 h-6 text-purple-600" />
+              <div className="p-3 bg-green-100 rounded-full">
+                <DollarSign className="w-6 h-6 text-green-600" />
               </div>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Withdraw Funds and Payout Methods Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Withdraw Funds</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700">Amount to withdraw</label>
+              <div className="mt-1 relative">
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  defaultValue="$1,500.00"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium text-gray-700">Select payout method</label>
+              <div className="mt-3 grid grid-cols-3 gap-3">
+                <button className="flex flex-col items-center p-4 border-2 border-blue-500 rounded-lg bg-blue-50">
+                  <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center mb-2">
+                    <span className="text-white text-xs font-bold">S</span>
+                  </div>
+                  <span className="text-sm font-medium text-blue-600">Stripe</span>
+                  <span className="text-xs text-gray-500">Connected</span>
+                </button>
+                
+                <button className="flex flex-col items-center p-4 border border-gray-300 rounded-lg hover:border-blue-300">
+                  <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center mb-2">
+                    <span className="text-white text-xs font-bold">P</span>
+                  </div>
+                  <span className="text-sm font-medium">PayPal</span>
+                  <span className="text-xs text-gray-500">Connected</span>
+                </button>
+                
+                <button className="flex flex-col items-center p-4 border border-gray-300 rounded-lg hover:border-blue-300">
+                  <div className="w-8 h-8 bg-gray-600 rounded flex items-center justify-center mb-2">
+                    <span className="text-white text-xs font-bold">B</span>
+                  </div>
+                  <span className="text-sm font-medium">Bank</span>
+                  <span className="text-xs text-gray-500">Connect</span>
+                </button>
+              </div>
+            </div>
+            
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+              Withdraw $1,500.00
+            </Button>
+            
+            <p className="text-xs text-gray-500 text-center">
+              Withdrawals are typically processed within 1-3 business days
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Payout Methods</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">S</span>
+                </div>
+                <div>
+                  <p className="font-medium">Stripe Account</p>
+                  <p className="text-sm text-gray-500">Connected on May 15, 2023</p>
+                </div>
+              </div>
+              <Badge className="bg-green-100 text-green-800">Default</Badge>
+            </div>
+            
+            <Button variant="outline" className="w-full text-blue-600 border-blue-200">
+              Add New Payout Method
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -331,88 +372,88 @@ export default function Earnings() {
 
       {/* Recent Earnings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Earnings */}
+        {/* Recent Transactions */}
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>Recent Earnings</CardTitle>
-              <Select defaultValue="all">
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="paid">Paid</SelectItem>
-                </SelectContent>
-              </Select>
+              <CardTitle>Recent Transactions</CardTitle>
+              <Button variant="link" className="text-blue-600">
+                View All
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {earnings.slice(0, 5).map((earning) => (
-                  <TableRow key={earning.id}>
-                    <TableCell>
-                      {earning.createdAt ? formatDate(earning.createdAt) : "N/A"}
-                    </TableCell>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(earning.amount)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusBadgeClass(earning.status)}>
-                        {earning.status.charAt(0).toUpperCase() + earning.status.slice(1)}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-
-        {/* Payout History */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Payout History</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {payoutHistory.map((payout) => (
-                  <TableRow key={payout.id}>
-                    <TableCell>{formatDate(payout.date)}</TableCell>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(payout.amount)}
-                    </TableCell>
-                    <TableCell>{payout.method}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusBadgeClass(payout.status)}>
-                        {payout.status.charAt(0).toUpperCase() + payout.status.slice(1)}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="space-y-3 p-4">
+              <div className="flex items-center justify-between py-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                    <TrendingDown className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Withdrawal to Stripe</p>
+                    <p className="text-sm text-gray-500">June 12, 2023</p>
+                  </div>
+                </div>
+                <span className="font-semibold text-red-600">-$750.00</span>
+              </div>
+              
+              <div className="flex items-center justify-between py-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Referral Commission</p>
+                    <p className="text-sm text-gray-500">June 10, 2023</p>
+                  </div>
+                </div>
+                <span className="font-semibold text-green-600">+$325.50</span>
+              </div>
+              
+              <div className="flex items-center justify-between py-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Referral Commission</p>
+                    <p className="text-sm text-gray-500">June 8, 2023</p>
+                  </div>
+                </div>
+                <span className="font-semibold text-green-600">+$450.00</span>
+              </div>
+              
+              <div className="flex items-center justify-between py-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                    <TrendingDown className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Withdrawal to Stripe</p>
+                    <p className="text-sm text-gray-500">June 1, 2023</p>
+                  </div>
+                </div>
+                <span className="font-semibold text-red-600">-$1,200.00</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Help Section */}
+      <Card className="bg-blue-50">
+        <CardContent className="p-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-1">Need help with your earnings?</h3>
+              <p className="text-gray-600">Our support team is available 24/7 to assist you with any questions.</p>
+            </div>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              Contact Support
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
