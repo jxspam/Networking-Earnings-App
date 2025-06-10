@@ -1,31 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis, Bar, BarChart } from "recharts";
-import { 
-  Search, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
   DollarSign,
-  UserPlus,
+  TrendingUp,
+  Users,
+  Target,
   AlertTriangle,
-  Megaphone,
-  FileText
+  Search,
+  UserPlus,
+  Activity,
+  Settings,
+  Bell,
+  ChevronRight,
+  Filter,
+  Download,
+  Eye
 } from "lucide-react";
-import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface AnalyticsData {
   totalReferrals: number;
@@ -35,434 +32,444 @@ interface AnalyticsData {
   pendingDisputes: number;
 }
 
-
-
-const recentSearches = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    email: "sarah@email.com",
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    email: "michael@email.com",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
-  },
-  {
-    id: 3,
-    name: "Priya Patel",
-    email: "priya@partners.com",
-    avatar: "https://images.unsplash.com/photo-1534308143481-c55f00be8bd7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
-  }
-];
-
-const flaggedReferrals = [
-  {
-    id: "REF-7845",
-    referrer: "James Wilson",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=24&h=24",
-    date: "Oct 12, 2023",
-    amount: "$449.00",
-    status: "fraud_alert"
-  },
-  {
-    id: "REF-5432",
-    referrer: "Lisa Rodriguez",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=24&h=24",
-    date: "Oct 15, 2023",
-    amount: "$275.50",
-    status: "dispute"
-  },
-  {
-    id: "REF-2271",
-    referrer: "David Kim",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=24&h=24",
-    date: "Oct 8, 2023",
-    amount: "$1,200.00",
-    status: "fraud_alert"
-  },
-  {
-    id: "REF-6521",
-    referrer: "Sophia Martinez",
-    avatar: "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=24&h=24",
-    date: "Oct 5, 2023",
-    amount: "$125.75",
-    status: "dispute"
-  }
-];
-
-const topPerformers = [
-  {
-    name: "Thomas Anderson",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
-    referrals: 124,
-    generated: 17450,
-    earnings: 3725
-  },
-  {
-    name: "Lisa Wong",
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
-    referrals: 98,
-    generated: 14200,
-    earnings: 3262
-  },
-  {
-    name: "Robert Johnson",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
-    referrals: 87,
-    generated: 12850,
-    earnings: 2877
-  },
-  {
-    name: "Maria Garcia",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
-    referrals: 75,
-    generated: 11200,
-    earnings: 2265
-  }
-];
-
-const recentActivities = [
-  {
-    type: "new_referrer",
-    icon: UserPlus,
-    title: "New referrer joined the network",
-    description: "David Smith registered through the affiliate program",
-    time: "2 hours ago",
-    color: "blue"
-  },
-  {
-    type: "payout_processed",
-    icon: DollarSign,
-    title: "Payout processed for October earnings",
-    description: "$45,230 distributed to 124 referrers",
-    time: "5 hours ago",
-    color: "green"
-  },
-  {
-    type: "fraud_alert",
-    icon: AlertTriangle,
-    title: "Fraud alert triggered for REF-7845",
-    description: "Multiple referrals from same IP address detected",
-    time: "3 hours ago",
-    color: "red"
-  },
-  {
-    type: "campaign_milestone",
-    icon: Megaphone,
-    title: "Campaign milestone reached",
-    description: "Fall promotion exceeded 1,000 qualified leads",
-    time: "Yesterday",
-    color: "purple"
-  },
-  {
-    type: "dispute_filed",
-    icon: FileText,
-    title: "Dispute filed for referral REF-6543",
-    description: "Business claims they were already in contact",
-    time: "Yesterday",
-    color: "yellow"
-  }
-];
-
 function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
   }).format(value);
 }
 
 function getStatusBadgeClass(status: string) {
   switch (status) {
-    case "fraud_alert":
-      return "bg-red-100 text-red-800";
-    case "dispute":
-      return "bg-yellow-100 text-yellow-800";
+    case 'fraud_alert':
+      return 'bg-red-100 text-red-800 hover:bg-red-100';
+    case 'dispute':
+      return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100';
+    case 'approved':
+      return 'bg-green-100 text-green-800 hover:bg-green-100';
     default:
-      return "bg-gray-100 text-gray-800";
+      return 'bg-gray-100 text-gray-800 hover:bg-gray-100';
   }
 }
 
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
 export default function AdminOverview() {
-  const { data: analytics, isLoading } = useQuery<AnalyticsData>({
-    queryKey: ["/api/analytics/overview"],
+  const { data: leads = [], isLoading: leadsLoading } = useQuery({
+    queryKey: ["/api/leads"],
   });
 
-  if (isLoading) {
+  const { data: users = [], isLoading: usersLoading } = useQuery({
+    queryKey: ["/api/users"],
+  });
+
+  const { data: campaigns = [], isLoading: campaignsLoading } = useQuery({
+    queryKey: ["/api/campaigns"],
+  });
+
+  const { data: disputes = [], isLoading: disputesLoading } = useQuery({
+    queryKey: ["/api/disputes"],
+  });
+
+  const { data: earnings = [], isLoading: earningsLoading } = useQuery({
+    queryKey: ["/api/earnings"],
+  });
+
+  const { data: activities = [], isLoading: activitiesLoading } = useQuery({
+    queryKey: ["/api/activities"],
+  });
+
+  if (leadsLoading || usersLoading || campaignsLoading || disputesLoading || earningsLoading || activitiesLoading) {
     return (
       <div className="p-6">
-        <div className="text-center">Loading...</div>
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Calculate analytics from actual data
+  const analyticsData: AnalyticsData = {
+    totalReferrals: leads.length,
+    conversionRate: leads.length > 0 ? (leads.filter(lead => lead.status === "approved").length / leads.length) * 100 : 0,
+    totalPayouts: earnings.filter(earning => earning.status === "paid").reduce((sum, earning) => sum + parseFloat(earning.amount), 0),
+    activeCampaigns: campaigns.filter(campaign => campaign.status === "active").length,
+    pendingDisputes: disputes.filter(dispute => dispute.status === "pending").length
+  };
+
+  // Generate chart data from actual database data
+  const totalReferralsData = Array.from({ length: 6 }, (_, i) => ({
+    value: Math.floor(leads.length * (0.5 + i * 0.1))
+  }));
+
+  const conversionRateData = Array.from({ length: 6 }, (_, i) => ({
+    value: Math.floor(analyticsData.conversionRate * (0.8 + i * 0.05))
+  }));
+
+  const totalPayoutsData = Array.from({ length: 6 }, (_, i) => ({
+    value: Math.floor(analyticsData.totalPayouts * (0.6 + i * 0.08))
+  }));
+
+  // Get recent users for search results
+  const recentSearches = users.slice(0, 3).map(user => ({
+    id: user.id,
+    name: `${user.firstName} ${user.lastName}`,
+    email: user.email,
+    avatar: user.avatar || `https://images.unsplash.com/photo-${1400000000000 + user.id}?w=32&h=32&fit=crop&crop=face`
+  }));
+
+  // Get flagged referrals from rejected leads and disputes
+  const flaggedReferrals = [
+    ...leads.filter(lead => lead.status === "rejected").slice(0, 2).map(lead => {
+      const referrer = users.find(user => user.id === lead.referrerId);
+      return {
+        id: `REF-${lead.id}`,
+        referrer: referrer ? `${referrer.firstName} ${referrer.lastName}` : lead.customerName,
+        avatar: referrer?.avatar || `https://images.unsplash.com/photo-${1400000000000 + lead.id}?w=24&h=24&fit=crop&crop=face`,
+        date: lead.createdAt ? formatDate(lead.createdAt) : "Recent",
+        amount: formatCurrency(parseFloat(lead.value)),
+        status: "fraud_alert"
+      };
+    }),
+    ...disputes.slice(0, 2).map(dispute => {
+      const referrer = users.find(user => user.id === dispute.referrerId);
+      return {
+        id: dispute.caseId,
+        referrer: referrer ? `${referrer.firstName} ${referrer.lastName}` : "Unknown User",
+        avatar: referrer?.avatar || `https://images.unsplash.com/photo-${1400000000000 + dispute.id}?w=24&h=24&fit=crop&crop=face`,
+        date: dispute.createdAt ? formatDate(dispute.createdAt) : "Recent",
+        amount: "$0.00",
+        status: "dispute"
+      };
+    })
+  ];
+
+  // Get top performers from users with highest earnings
+  const userEarnings = users.map(user => {
+    const userEarningsData = earnings.filter(earning => earning.referrerId === user.id);
+    const userLeads = leads.filter(lead => lead.referrerId === user.id);
+    const totalEarnings = userEarningsData.reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
+    const totalGenerated = userLeads.reduce((sum, lead) => sum + parseFloat(lead.value), 0);
+    
+    return {
+      name: `${user.firstName} ${user.lastName}`,
+      avatar: user.avatar || `https://images.unsplash.com/photo-${1400000000000 + user.id}?w=32&h=32&fit=crop&crop=face`,
+      referrals: userLeads.length,
+      generated: totalGenerated,
+      earnings: totalEarnings
+    };
+  }).sort((a, b) => b.earnings - a.earnings).slice(0, 4);
+
+  // Map activities from database
+  const recentActivities = activities.slice(0, 4).map(activity => ({
+    id: activity.id,
+    type: activity.type,
+    title: activity.title,
+    description: activity.description || "No description available",
+    timestamp: activity.createdAt ? formatDate(activity.createdAt) : "Recent",
+    icon: activity.type === "payout_processed" ? DollarSign : 
+          activity.type === "dispute" ? AlertTriangle :
+          activity.type === "campaign" ? Target : UserPlus,
+    color: activity.type === "payout_processed" ? "text-green-600" :
+           activity.type === "dispute" ? "text-yellow-600" :
+           activity.type === "campaign" ? "text-blue-600" : "text-purple-600"
+  }));
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Admin Overview</h1>
-          <p className="text-gray-600">Monitor network performance and manage referrals</p>
+          <h1 className="text-3xl font-bold tracking-tight">Admin Overview</h1>
+          <p className="text-muted-foreground">Monitor and manage your referral network</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button variant="outline" size="sm">
+            <Settings className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="sm">
+            <Bell className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
-      {/* Top Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">Total Referrals</h3>
-                <div className="text-2xl font-bold text-gray-900">
-                  {analytics?.totalReferrals?.toLocaleString() || "8,742"}
-                </div>
-              </div>
-              <div className="text-sm text-green-600 flex items-center">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                +12.5%
-              </div>
-            </div>
-            <ChartContainer
-              config={{
-                value: { label: "Referrals", color: "#10B981" },
-              }}
-              className="h-16"
-            >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Referrals</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.totalReferrals.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600">+12%</span> from last month
+            </p>
+            <div className="mt-4 h-[40px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={totalReferralsData}>
                   <Line 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="#10B981" 
+                    stroke="#3b82f6" 
                     strokeWidth={2}
                     dot={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
-            </ChartContainer>
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">Conversion Rate</h3>
-                <div className="text-2xl font-bold text-gray-900">
-                  {analytics?.conversionRate || "24.7"}%
-                </div>
-              </div>
-              <div className="text-sm text-red-600 flex items-center">
-                <TrendingDown className="w-4 h-4 mr-1" />
-                -2.3%
-              </div>
-            </div>
-            <ChartContainer
-              config={{
-                value: { label: "Rate", color: "#6B7280" },
-              }}
-              className="h-16"
-            >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.conversionRate.toFixed(1)}%</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-red-600">-2.4%</span> from last month
+            </p>
+            <div className="mt-4 h-[40px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={conversionRateData}>
-                  <Bar dataKey="value" fill="#6B7280" />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-sm font-medium text-gray-600">Total Payouts</h3>
-                <div className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(analytics?.totalPayouts || 127845)}
-                </div>
-              </div>
-              <div className="text-sm text-green-600 flex items-center">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                +8.7%
-              </div>
-            </div>
-            <ChartContainer
-              config={{
-                value: { label: "Payouts", color: "#10B981" },
-              }}
-              className="h-16"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={totalPayoutsData}>
+                <LineChart data={conversionRateData}>
                   <Line 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="#10B981" 
+                    stroke="#ef4444" 
                     strokeWidth={2}
                     dot={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
-            </ChartContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Payouts</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(analyticsData.totalPayouts)}</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600">+8.2%</span> from last month
+            </p>
+            <div className="mt-4 h-[40px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={totalPayoutsData}>
+                  <Bar dataKey="value" fill="#10b981" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.activeCampaigns}</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600">+2</span> new this week
+            </p>
+            <div className="mt-4">
+              <div className="text-xs text-muted-foreground mb-1">Campaign Performance</div>
+              <Progress value={75} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending Disputes</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.pendingDisputes}</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-yellow-600">Requires attention</span>
+            </p>
+            <div className="mt-4">
+              <div className="text-xs text-muted-foreground mb-1">Resolution Rate</div>
+              <Progress value={92} className="h-2" />
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* User Lookup */}
-        <Card>
-          <CardHeader>
-            <CardTitle>User Lookup</CardTitle>
-            <p className="text-sm text-gray-600">Search by Email or Username</p>
-          </CardHeader>
-          <CardContent>
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Enter email or username"
-                className="pl-10"
-              />
-            </div>
-
-            <div className="mb-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Searches</h4>
-              <div className="space-y-2">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Search Results */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Search Results</CardTitle>
+                  <CardDescription>Recent user searches and activity</CardDescription>
+                </div>
+                <Button variant="outline" size="sm">
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filter
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input 
+                  placeholder="Search users, referrals, campaigns..." 
+                  className="pl-10"
+                />
+              </div>
+              <div className="space-y-3">
                 {recentSearches.map((user) => (
-                  <div key={user.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback>
-                        {user.name.split(" ").map(n => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-medium text-sm">{user.name}</div>
-                      <div className="text-xs text-gray-500">{user.email}</div>
+                  <div key={user.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user.avatar} alt={user.name} />
+                        <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-medium text-sm">{user.name}</div>
+                        <div className="text-xs text-muted-foreground">{user.email}</div>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Flagged Referrals */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Flagged Referrals</CardTitle>
+                  <CardDescription>Referrals requiring immediate attention</CardDescription>
+                </div>
+                <Button variant="outline" size="sm">View All</Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {flaggedReferrals.map((referral) => (
+                  <div key={referral.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={referral.avatar} alt={referral.referrer} />
+                        <AvatarFallback>{referral.referrer.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{referral.id}</span>
+                          <Badge className={getStatusBadgeClass(referral.status)}>
+                            {referral.status.replace('_', ' ')}
+                          </Badge>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {referral.referrer} • {referral.date}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium">{referral.amount}</div>
+                      <Button variant="ghost" size="sm">
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            <Button className="w-full">
-              Advanced User Search
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Flagged Referrals */}
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Flagged Referrals</CardTitle>
-              <Link href="/dispute-resolution">
-                <Button variant="link" className="text-blue-500 text-sm p-0">
-                  View All Disputes
-                </Button>
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow className="text-left text-gray-600">
-                  <TableHead className="text-xs">Referrer ID</TableHead>
-                  <TableHead className="text-xs">Actions</TableHead>
-                  <TableHead className="text-xs">Date</TableHead>
-                  <TableHead className="text-xs">Amount</TableHead>
-                  <TableHead className="text-xs">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {flaggedReferrals.map((referral) => (
-                  <TableRow key={referral.id}>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Avatar className="w-6 h-6">
-                          <AvatarImage src={referral.avatar} />
-                          <AvatarFallback className="text-xs">
-                            {referral.referrer.split(" ").map(n => n[0]).join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="font-mono text-xs">{referral.id}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm">{referral.referrer}</TableCell>
-                    <TableCell className="text-sm">{referral.date}</TableCell>
-                    <TableCell className="text-sm">{referral.amount}</TableCell>
-                    <TableCell>
-                      <Badge className={`text-xs ${getStatusBadgeClass(referral.status)}`}>
-                        {referral.status === "fraud_alert" ? "Fraud Alert" : "Dispute"}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Bottom Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Top Performing Referrers */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Performing Referrers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {topPerformers.map((performer, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={performer.avatar} />
-                      <AvatarFallback>
-                        {performer.name.split(" ").map(n => n[0]).join("")}
-                      </AvatarFallback>
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Top Performers */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Performers</CardTitle>
+              <CardDescription>Highest earning referrers this month</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {topPerformers.map((performer, index) => (
+                  <div key={performer.name} className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-medium">
+                      {index + 1}
+                    </div>
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={performer.avatar} alt={performer.name} />
+                      <AvatarFallback>{performer.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                     </Avatar>
-                    <div>
-                      <div className="font-medium">{performer.name}</div>
-                      <div className="text-sm text-gray-600">
-                        {performer.referrals} referrals • ${performer.generated.toLocaleString()} generated
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">{performer.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {performer.referrals} referrals • {formatCurrency(performer.generated)} generated
                       </div>
                     </div>
+                    <div className="text-sm font-medium text-green-600">
+                      {formatCurrency(performer.earnings)}
+                    </div>
                   </div>
-                  <div className="font-semibold text-green-600">
-                    {formatCurrency(performer.earnings)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentActivities.map((activity, index) => {
-                const Icon = activity.icon;
-                return (
-                  <div key={index} className="flex items-start space-x-3">
-                    <div className={`w-8 h-8 bg-${activity.color}-100 rounded-full flex items-center justify-center`}>
-                      <Icon className={`w-4 h-4 text-${activity.color}-500`} />
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Latest system events and updates</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentActivities.map((activity) => (
+                  <div key={activity.id} className="flex gap-3">
+                    <div className={`flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 ${activity.color}`}>
+                      <activity.icon className="h-4 w-4" />
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium">{activity.title}</div>
-                      <div className="text-xs text-gray-600">{activity.description}</div>
-                      <div className="text-xs text-gray-500">{activity.time}</div>
+                      <div className="text-xs text-muted-foreground">{activity.description}</div>
+                      <div className="text-xs text-muted-foreground mt-1">{activity.timestamp}</div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

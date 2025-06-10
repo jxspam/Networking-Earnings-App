@@ -121,7 +121,7 @@ export default function EnhancedDashboard() {
     return {
       id: lead.id,
       name: referrer ? `${referrer.firstName} ${referrer.lastName}` : lead.customerName,
-      email: lead.customerEmail || `${lead.customerName.toLowerCase().replace(' ', '.')}@email.com`,
+      email: `${lead.customerName.toLowerCase().replace(' ', '.')}@email.com`,
       avatar: referrer?.avatar || `https://images.unsplash.com/photo-${1400000000000 + lead.id}?w=32&h=32&fit=crop&crop=face`,
       date: lead.createdAt ? formatDate(lead.createdAt) : "Recent",
       status: lead.status.charAt(0).toUpperCase() + lead.status.slice(1),
