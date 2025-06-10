@@ -18,6 +18,8 @@ import {
   type Activity,
   type InsertActivity,
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -534,4 +536,243 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database storage implementation
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...insertUser,
+        role: insertUser.role || "referrer",
+        tier: insertUser.tier || "standard",
+        avatar: insertUser.avatar || null,
+        createdAt: new Date()
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getLeads(): Promise<Lead[]> {
+    return await db.select().from(leads).orderBy(leads.createdAt);
+  }
+
+  async getLead(id: number): Promise<Lead | undefined> {
+    const [lead] = await db.select().from(leads).where(eq(leads.id, id));
+    return lead || undefined;
+  }
+
+  async createLead(insertLead: InsertLead): Promise<Lead> {
+    const [lead] = await db
+      .insert(leads)
+      .values({
+        ...insertLead,
+        referrerId: insertLead.referrerId || null,
+        customerEmail: insertLead.customerEmail || null,
+        customerPhone: insertLead.customerPhone || null,
+        status: insertLead.status || "pending",
+        businessName: insertLead.businessName || null,
+        notes: insertLead.notes || null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      .returning();
+    return lead;
+  }
+
+  async updateLead(id: number, updates: Partial<InsertLead>): Promise<Lead | undefined> {
+    const [lead] = await db
+      .update(leads)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(leads.id, id))
+      .returning();
+    return lead || undefined;
+  }
+
+  async getLeadsByReferrer(referrerId: number): Promise<Lead[]> {
+    return await db.select().from(leads).where(eq(leads.referrerId, referrerId));
+  }
+
+  async getLeadsByStatus(status: string): Promise<Lead[]> {
+    return await db.select().from(leads).where(eq(leads.status, status));
+  }
+
+  async getCampaigns(): Promise<Campaign[]> {
+    return await db.select().from(campaigns).orderBy(campaigns.createdAt);
+  }
+
+  async getCampaign(id: number): Promise<Campaign | undefined> {
+    const [campaign] = await db.select().from(campaigns).where(eq(campaigns.id, id));
+    return campaign || undefined;
+  }
+
+  async createCampaign(insertCampaign: InsertCampaign): Promise<Campaign> {
+    const [campaign] = await db
+      .insert(campaigns)
+      .values({
+        ...insertCampaign,
+        businessId: insertCampaign.businessId || null,
+        description: insertCampaign.description || null,
+        status: insertCampaign.status || "active",
+        budgetUsed: "0",
+        leads: 0,
+        conversions: 0,
+        createdAt: new Date()
+      })
+      .returning();
+    return campaign;
+  }
+
+  async updateCampaign(id: number, updates: Partial<InsertCampaign>): Promise<Campaign | undefined> {
+    const [campaign] = await db
+      .update(campaigns)
+      .set(updates)
+      .where(eq(campaigns.id, id))
+      .returning();
+    return campaign || undefined;
+  }
+
+  async getCampaignsByBusiness(businessId: number): Promise<Campaign[]> {
+    return await db.select().from(campaigns).where(eq(campaigns.businessId, businessId));
+  }
+
+  async getDisputes(): Promise<Dispute[]> {
+    return await db.select().from(disputes).orderBy(disputes.createdAt);
+  }
+
+  async getDispute(id: number): Promise<Dispute | undefined> {
+    const [dispute] = await db.select().from(disputes).where(eq(disputes.id, id));
+    return dispute || undefined;
+  }
+
+  async createDispute(insertDispute: InsertDispute): Promise<Dispute> {
+    const [dispute] = await db
+      .insert(disputes)
+      .values({
+        ...insertDispute,
+        referrerId: insertDispute.referrerId || null,
+        businessId: insertDispute.businessId || null,
+        leadId: insertDispute.leadId || null,
+        status: insertDispute.status || "pending",
+        referrerResponse: insertDispute.referrerResponse || null,
+        adminNotes: insertDispute.adminNotes || null,
+        evidence: insertDispute.evidence || null,
+        createdAt: new Date(),
+        resolvedAt: null
+      })
+      .returning();
+    return dispute;
+  }
+
+  async updateDispute(id: number, updates: Partial<InsertDispute>): Promise<Dispute | undefined> {
+    const updateData = { ...updates };
+    if (updates.status && updates.status !== "pending") {
+      updateData.resolvedAt = new Date();
+    }
+    
+    const [dispute] = await db
+      .update(disputes)
+      .set(updateData)
+      .where(eq(disputes.id, id))
+      .returning();
+    return dispute || undefined;
+  }
+
+  async getDisputesByStatus(status: string): Promise<Dispute[]> {
+    return await db.select().from(disputes).where(eq(disputes.status, status));
+  }
+
+  async getEarnings(): Promise<Earning[]> {
+    return await db.select().from(earnings).orderBy(earnings.createdAt);
+  }
+
+  async getEarning(id: number): Promise<Earning | undefined> {
+    const [earning] = await db.select().from(earnings).where(eq(earnings.id, id));
+    return earning || undefined;
+  }
+
+  async createEarning(insertEarning: InsertEarning): Promise<Earning> {
+    const [earning] = await db
+      .insert(earnings)
+      .values({
+        ...insertEarning,
+        referrerId: insertEarning.referrerId || null,
+        leadId: insertEarning.leadId || null,
+        campaignId: insertEarning.campaignId || null,
+        status: insertEarning.status || "pending",
+        createdAt: new Date(),
+        paidAt: null
+      })
+      .returning();
+    return earning;
+  }
+
+  async updateEarning(id: number, updates: Partial<InsertEarning>): Promise<Earning | undefined> {
+    const updateData = { ...updates };
+    if (updates.status === "paid") {
+      updateData.paidAt = new Date();
+    }
+    
+    const [earning] = await db
+      .update(earnings)
+      .set(updateData)
+      .where(eq(earnings.id, id))
+      .returning();
+    return earning || undefined;
+  }
+
+  async getEarningsByReferrer(referrerId: number): Promise<Earning[]> {
+    return await db.select().from(earnings).where(eq(earnings.referrerId, referrerId));
+  }
+
+  async getActivities(): Promise<Activity[]> {
+    return await db.select().from(activities).orderBy(activities.createdAt);
+  }
+
+  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
+    const [activity] = await db
+      .insert(activities)
+      .values({
+        ...insertActivity,
+        userId: insertActivity.userId || null,
+        description: insertActivity.description || null,
+        metadata: insertActivity.metadata || {},
+        createdAt: new Date()
+      })
+      .returning();
+    return activity;
+  }
+
+  async getRecentActivities(limit: number = 10): Promise<Activity[]> {
+    return await db.select().from(activities).orderBy(activities.createdAt).limit(limit);
+  }
+}
+
+export const storage = new DatabaseStorage();
