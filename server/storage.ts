@@ -1,0 +1,537 @@
+import {
+  users,
+  leads,
+  campaigns,
+  disputes,
+  earnings,
+  activities,
+  type User,
+  type InsertUser,
+  type Lead,
+  type InsertLead,
+  type Campaign,
+  type InsertCampaign,
+  type Dispute,
+  type InsertDispute,
+  type Earning,
+  type InsertEarning,
+  type Activity,
+  type InsertActivity,
+} from "@shared/schema";
+
+export interface IStorage {
+  // Users
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined>;
+  getUsers(): Promise<User[]>;
+  
+  // Leads
+  getLeads(): Promise<Lead[]>;
+  getLead(id: number): Promise<Lead | undefined>;
+  createLead(lead: InsertLead): Promise<Lead>;
+  updateLead(id: number, updates: Partial<InsertLead>): Promise<Lead | undefined>;
+  getLeadsByReferrer(referrerId: number): Promise<Lead[]>;
+  getLeadsByStatus(status: string): Promise<Lead[]>;
+  
+  // Campaigns
+  getCampaigns(): Promise<Campaign[]>;
+  getCampaign(id: number): Promise<Campaign | undefined>;
+  createCampaign(campaign: InsertCampaign): Promise<Campaign>;
+  updateCampaign(id: number, updates: Partial<InsertCampaign>): Promise<Campaign | undefined>;
+  getCampaignsByBusiness(businessId: number): Promise<Campaign[]>;
+  
+  // Disputes
+  getDisputes(): Promise<Dispute[]>;
+  getDispute(id: number): Promise<Dispute | undefined>;
+  createDispute(dispute: InsertDispute): Promise<Dispute>;
+  updateDispute(id: number, updates: Partial<InsertDispute>): Promise<Dispute | undefined>;
+  getDisputesByStatus(status: string): Promise<Dispute[]>;
+  
+  // Earnings
+  getEarnings(): Promise<Earning[]>;
+  getEarning(id: number): Promise<Earning | undefined>;
+  createEarning(earning: InsertEarning): Promise<Earning>;
+  updateEarning(id: number, updates: Partial<InsertEarning>): Promise<Earning | undefined>;
+  getEarningsByReferrer(referrerId: number): Promise<Earning[]>;
+  
+  // Activities
+  getActivities(): Promise<Activity[]>;
+  createActivity(activity: InsertActivity): Promise<Activity>;
+  getRecentActivities(limit?: number): Promise<Activity[]>;
+}
+
+export class MemStorage implements IStorage {
+  private users: Map<number, User>;
+  private leads: Map<number, Lead>;
+  private campaigns: Map<number, Campaign>;
+  private disputes: Map<number, Dispute>;
+  private earnings: Map<number, Earning>;
+  private activities: Map<number, Activity>;
+  
+  private currentUserId: number;
+  private currentLeadId: number;
+  private currentCampaignId: number;
+  private currentDisputeId: number;
+  private currentEarningId: number;
+  private currentActivityId: number;
+
+  constructor() {
+    this.users = new Map();
+    this.leads = new Map();
+    this.campaigns = new Map();
+    this.disputes = new Map();
+    this.earnings = new Map();
+    this.activities = new Map();
+    
+    this.currentUserId = 1;
+    this.currentLeadId = 1;
+    this.currentCampaignId = 1;
+    this.currentDisputeId = 1;
+    this.currentEarningId = 1;
+    this.currentActivityId = 1;
+
+    this.initializeSampleData();
+  }
+
+  private initializeSampleData() {
+    // Create admin user
+    this.createUser({
+      username: "alex.morgan",
+      email: "alex@networkearnings.com",
+      password: "password123",
+      firstName: "Alex",
+      lastName: "Morgan",
+      role: "admin",
+      tier: "premium",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
+    });
+
+    // Create referrer users
+    this.createUser({
+      username: "sarah.johnson",
+      email: "sarah@email.com",
+      password: "password123",
+      firstName: "Sarah",
+      lastName: "Johnson",
+      role: "referrer",
+      tier: "premium",
+      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
+    });
+
+    this.createUser({
+      username: "david.chen",
+      email: "david@email.com",
+      password: "password123",
+      firstName: "David",
+      lastName: "Chen",
+      role: "referrer",
+      tier: "standard",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
+    });
+
+    this.createUser({
+      username: "emily.rodriguez",
+      email: "emily@email.com",
+      password: "password123",
+      firstName: "Emily",
+      lastName: "Rodriguez",
+      role: "referrer",
+      tier: "standard",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
+    });
+
+    this.createUser({
+      username: "marcus.williams",
+      email: "marcus@email.com",
+      password: "password123",
+      firstName: "Marcus",
+      lastName: "Williams",
+      role: "referrer",
+      tier: "standard",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
+    });
+
+    this.createUser({
+      username: "olivia.kim",
+      email: "olivia@email.com",
+      password: "password123",
+      firstName: "Olivia",
+      lastName: "Kim",
+      role: "referrer",
+      tier: "premium",
+      avatar: "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32"
+    });
+
+    // Create business users
+    this.createUser({
+      username: "techsolutions.inc",
+      email: "contact@techsolutions.com",
+      password: "password123",
+      firstName: "Tech",
+      lastName: "Solutions",
+      role: "business",
+      tier: "premium"
+    });
+
+    // Create sample leads
+    this.createLead({
+      referrerId: 2,
+      customerName: "Michael Thompson",
+      customerEmail: "michael.thompson@email.com",
+      service: "Home Renovation",
+      value: "2450.00",
+      status: "pending",
+      businessName: "Home Pro Services"
+    });
+
+    this.createLead({
+      referrerId: 3,
+      customerName: "Rebecca Wilson",
+      customerEmail: "rebecca.wilson@email.com", 
+      service: "Kitchen Remodeling",
+      value: "5800.00",
+      status: "approved",
+      businessName: "Kitchen Masters"
+    });
+
+    this.createLead({
+      referrerId: 4,
+      customerName: "James Parker",
+      customerEmail: "james.parker@email.com",
+      service: "Bathroom Remodel",
+      value: "3200.00",
+      status: "approved",
+      businessName: "Bath Renovations Co"
+    });
+
+    this.createLead({
+      referrerId: 5,
+      customerName: "Sophia Garcia",
+      customerEmail: "sophia.garcia@email.com",
+      service: "Landscaping",
+      value: "1850.00",
+      status: "rejected",
+      businessName: "Green Thumb Landscaping"
+    });
+
+    this.createLead({
+      referrerId: 6,
+      customerName: "Daniel Martinez",
+      customerEmail: "daniel.martinez@email.com",
+      service: "Roof Repair",
+      value: "2100.00",
+      status: "pending",
+      businessName: "Roof Masters"
+    });
+
+    // Create sample campaigns
+    this.createCampaign({
+      businessId: 7,
+      name: "Summer Sale Referrals",
+      description: "Promote our summer home improvement services",
+      serviceArea: "home-services",
+      rewardPerConversion: "25.00",
+      maxBudget: "5000.00",
+      startDate: new Date("2023-06-01"),
+      endDate: new Date("2023-07-31"),
+      postcode: { start: "10001", end: "10099" },
+      status: "active"
+    });
+
+    this.createCampaign({
+      businessId: 7,
+      name: "Tech Product Launch",
+      description: "New technology services campaign",
+      serviceArea: "technology",
+      rewardPerConversion: "40.00",
+      maxBudget: "10000.00",
+      startDate: new Date("2023-08-01"),
+      endDate: new Date("2023-09-15"),
+      postcode: { start: "20001", end: "20099" },
+      status: "active"
+    });
+
+    // Create sample disputes
+    this.createDispute({
+      caseId: "DR-7829",
+      leadId: 1,
+      businessId: 7,
+      referrerId: 2,
+      businessClaim: "Client was already in our database before referral",
+      referrerResponse: "Initial contact was made through my referral link",
+      status: "pending"
+    });
+
+    this.createDispute({
+      caseId: "DR-7831",
+      leadId: 2,
+      businessId: 7,
+      referrerId: 3,
+      businessClaim: "Referral code used after direct contact was established",
+      referrerResponse: "Client confirmed they found us through my social media campaign",
+      status: "pending"
+    });
+
+    // Create sample earnings
+    this.createEarning({
+      referrerId: 2,
+      leadId: 1,
+      campaignId: 1,
+      amount: "245.00",
+      status: "pending"
+    });
+
+    this.createEarning({
+      referrerId: 3,
+      leadId: 2,
+      campaignId: 1,
+      amount: "580.00",
+      status: "paid"
+    });
+
+    this.createEarning({
+      referrerId: 4,
+      leadId: 3,
+      campaignId: 2,
+      amount: "320.00",
+      status: "paid"
+    });
+
+    // Create sample activities
+    this.createActivity({
+      userId: 1,
+      type: "new_referrer",
+      title: "New referrer joined the network",
+      description: "David Smith registered through the affiliate program"
+    });
+
+    this.createActivity({
+      userId: 1,
+      type: "payout_processed",
+      title: "Payout processed for October earnings",
+      description: "$45,230 distributed to 124 referrers"
+    });
+  }
+
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.username === username);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.email === email);
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.currentUserId++;
+    const user: User = {
+      ...insertUser,
+      id,
+      createdAt: new Date(),
+    };
+    this.users.set(id, user);
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updatedUser = { ...user, ...updates };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async getUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
+  // Lead methods
+  async getLeads(): Promise<Lead[]> {
+    return Array.from(this.leads.values()).sort((a, b) => 
+      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
+  }
+
+  async getLead(id: number): Promise<Lead | undefined> {
+    return this.leads.get(id);
+  }
+
+  async createLead(insertLead: InsertLead): Promise<Lead> {
+    const id = this.currentLeadId++;
+    const now = new Date();
+    const lead: Lead = {
+      ...insertLead,
+      id,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.leads.set(id, lead);
+    return lead;
+  }
+
+  async updateLead(id: number, updates: Partial<InsertLead>): Promise<Lead | undefined> {
+    const lead = this.leads.get(id);
+    if (!lead) return undefined;
+    
+    const updatedLead = { ...lead, ...updates, updatedAt: new Date() };
+    this.leads.set(id, updatedLead);
+    return updatedLead;
+  }
+
+  async getLeadsByReferrer(referrerId: number): Promise<Lead[]> {
+    return Array.from(this.leads.values()).filter(lead => lead.referrerId === referrerId);
+  }
+
+  async getLeadsByStatus(status: string): Promise<Lead[]> {
+    return Array.from(this.leads.values()).filter(lead => lead.status === status);
+  }
+
+  // Campaign methods
+  async getCampaigns(): Promise<Campaign[]> {
+    return Array.from(this.campaigns.values()).sort((a, b) => 
+      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
+  }
+
+  async getCampaign(id: number): Promise<Campaign | undefined> {
+    return this.campaigns.get(id);
+  }
+
+  async createCampaign(insertCampaign: InsertCampaign): Promise<Campaign> {
+    const id = this.currentCampaignId++;
+    const campaign: Campaign = {
+      ...insertCampaign,
+      id,
+      budgetUsed: "0",
+      leads: 0,
+      conversions: 0,
+      createdAt: new Date(),
+    };
+    this.campaigns.set(id, campaign);
+    return campaign;
+  }
+
+  async updateCampaign(id: number, updates: Partial<InsertCampaign>): Promise<Campaign | undefined> {
+    const campaign = this.campaigns.get(id);
+    if (!campaign) return undefined;
+    
+    const updatedCampaign = { ...campaign, ...updates };
+    this.campaigns.set(id, updatedCampaign);
+    return updatedCampaign;
+  }
+
+  async getCampaignsByBusiness(businessId: number): Promise<Campaign[]> {
+    return Array.from(this.campaigns.values()).filter(campaign => campaign.businessId === businessId);
+  }
+
+  // Dispute methods
+  async getDisputes(): Promise<Dispute[]> {
+    return Array.from(this.disputes.values()).sort((a, b) => 
+      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
+  }
+
+  async getDispute(id: number): Promise<Dispute | undefined> {
+    return this.disputes.get(id);
+  }
+
+  async createDispute(insertDispute: InsertDispute): Promise<Dispute> {
+    const id = this.currentDisputeId++;
+    const dispute: Dispute = {
+      ...insertDispute,
+      id,
+      createdAt: new Date(),
+      resolvedAt: null,
+    };
+    this.disputes.set(id, dispute);
+    return dispute;
+  }
+
+  async updateDispute(id: number, updates: Partial<InsertDispute>): Promise<Dispute | undefined> {
+    const dispute = this.disputes.get(id);
+    if (!dispute) return undefined;
+    
+    const updatedDispute = { ...dispute, ...updates };
+    if (updates.status && updates.status !== "pending") {
+      updatedDispute.resolvedAt = new Date();
+    }
+    this.disputes.set(id, updatedDispute);
+    return updatedDispute;
+  }
+
+  async getDisputesByStatus(status: string): Promise<Dispute[]> {
+    return Array.from(this.disputes.values()).filter(dispute => dispute.status === status);
+  }
+
+  // Earning methods
+  async getEarnings(): Promise<Earning[]> {
+    return Array.from(this.earnings.values()).sort((a, b) => 
+      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
+  }
+
+  async getEarning(id: number): Promise<Earning | undefined> {
+    return this.earnings.get(id);
+  }
+
+  async createEarning(insertEarning: InsertEarning): Promise<Earning> {
+    const id = this.currentEarningId++;
+    const earning: Earning = {
+      ...insertEarning,
+      id,
+      paidAt: null,
+      createdAt: new Date(),
+    };
+    this.earnings.set(id, earning);
+    return earning;
+  }
+
+  async updateEarning(id: number, updates: Partial<InsertEarning>): Promise<Earning | undefined> {
+    const earning = this.earnings.get(id);
+    if (!earning) return undefined;
+    
+    const updatedEarning = { ...earning, ...updates };
+    if (updates.status === "paid") {
+      updatedEarning.paidAt = new Date();
+    }
+    this.earnings.set(id, updatedEarning);
+    return updatedEarning;
+  }
+
+  async getEarningsByReferrer(referrerId: number): Promise<Earning[]> {
+    return Array.from(this.earnings.values()).filter(earning => earning.referrerId === referrerId);
+  }
+
+  // Activity methods
+  async getActivities(): Promise<Activity[]> {
+    return Array.from(this.activities.values()).sort((a, b) => 
+      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    );
+  }
+
+  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
+    const id = this.currentActivityId++;
+    const activity: Activity = {
+      ...insertActivity,
+      id,
+      createdAt: new Date(),
+    };
+    this.activities.set(id, activity);
+    return activity;
+  }
+
+  async getRecentActivities(limit: number = 10): Promise<Activity[]> {
+    const activities = await this.getActivities();
+    return activities.slice(0, limit);
+  }
+}
+
+export const storage = new MemStorage();
