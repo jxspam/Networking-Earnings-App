@@ -59,6 +59,7 @@ export const disputes = pgTable("disputes", {
   status: text("status").default("pending"), // pending, approved, rejected, escalated
   decision: text("decision"),
   adminId: integer("admin_id").references(() => users.id),
+  adminNotes: text("admin_notes"),
   evidence: jsonb("evidence"), // URLs, documents, etc.
   createdAt: timestamp("created_at").defaultNow(),
   resolvedAt: timestamp("resolved_at"),

@@ -35,32 +35,7 @@ interface AnalyticsData {
   pendingDisputes: number;
 }
 
-const totalReferralsData = [
-  { value: 6500 },
-  { value: 7200 },
-  { value: 7800 },
-  { value: 8100 },
-  { value: 8400 },
-  { value: 8742 },
-];
 
-const conversionRateData = [
-  { value: 28 },
-  { value: 31 },
-  { value: 29 },
-  { value: 25 },
-  { value: 27 },
-  { value: 24.7 },
-];
-
-const totalPayoutsData = [
-  { value: 95000 },
-  { value: 105000 },
-  { value: 115000 },
-  { value: 118000 },
-  { value: 125000 },
-  { value: 127845 },
-];
 
 const recentSearches = [
   {

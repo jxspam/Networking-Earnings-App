@@ -558,9 +558,9 @@ export class DatabaseStorage implements IStorage {
       .insert(users)
       .values({
         ...insertUser,
-        role: insertUser.role || "referrer",
-        tier: insertUser.tier || "standard",
-        avatar: insertUser.avatar || null,
+        role: insertUser.role ?? "referrer",
+        tier: insertUser.tier ?? "standard",
+        avatar: insertUser.avatar ?? null,
         createdAt: new Date()
       })
       .returning();
@@ -594,12 +594,12 @@ export class DatabaseStorage implements IStorage {
       .insert(leads)
       .values({
         ...insertLead,
-        referrerId: insertLead.referrerId || null,
-        customerEmail: insertLead.customerEmail || null,
-        customerPhone: insertLead.customerPhone || null,
-        status: insertLead.status || "pending",
-        businessName: insertLead.businessName || null,
-        notes: insertLead.notes || null,
+        referrerId: insertLead.referrerId ?? null,
+        customerEmail: insertLead.customerEmail ?? null,
+        customerPhone: insertLead.customerPhone ?? null,
+        status: insertLead.status ?? "pending",
+        businessName: insertLead.businessName ?? null,
+        notes: insertLead.notes ?? null,
         createdAt: new Date(),
         updatedAt: new Date()
       })
@@ -775,4 +775,291 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
+// Initialize database with sample data
+async function initializeSampleData() {
+  try {
+    // Check if data already exists
+    const existingUsers = await db.select().from(users).limit(1);
+    if (existingUsers.length > 0) {
+      console.log("Database already initialized with sample data");
+      return;
+    }
+
+    console.log("Initializing database with sample data...");
+
+    // Create admin user
+    const adminUser = await db.insert(users).values({
+      username: "alex.morgan",
+      email: "alex@networkearnings.com", 
+      password: "password123",
+      firstName: "Alex",
+      lastName: "Morgan",
+      role: "admin",
+      tier: "premium",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
+      createdAt: new Date()
+    }).returning();
+
+    // Create referrer users
+    const users_data = [
+      {
+        username: "sarah.johnson",
+        email: "sarah@email.com",
+        password: "password123", 
+        firstName: "Sarah",
+        lastName: "Johnson",
+        role: "referrer",
+        tier: "premium",
+        avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
+        createdAt: new Date()
+      },
+      {
+        username: "david.chen",
+        email: "david@email.com", 
+        password: "password123",
+        firstName: "David",
+        lastName: "Chen",
+        role: "referrer",
+        tier: "standard",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
+        createdAt: new Date()
+      },
+      {
+        username: "emily.rodriguez",
+        email: "emily@email.com",
+        password: "password123",
+        firstName: "Emily", 
+        lastName: "Rodriguez",
+        role: "referrer",
+        tier: "standard",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
+        createdAt: new Date()
+      },
+      {
+        username: "marcus.williams",
+        email: "marcus@email.com",
+        password: "password123",
+        firstName: "Marcus",
+        lastName: "Williams", 
+        role: "referrer",
+        tier: "standard",
+        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
+        createdAt: new Date()
+      },
+      {
+        username: "olivia.kim",
+        email: "olivia@email.com",
+        password: "password123", 
+        firstName: "Olivia",
+        lastName: "Kim",
+        role: "referrer",
+        tier: "premium",
+        avatar: "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=32&h=32",
+        createdAt: new Date()
+      }
+    ];
+
+    const referrerUsers = await db.insert(users).values(users_data).returning();
+
+    // Create business user
+    const businessUser = await db.insert(users).values({
+      username: "techsolutions.inc",
+      email: "contact@techsolutions.com",
+      password: "password123",
+      firstName: "Tech",
+      lastName: "Solutions",
+      role: "business", 
+      tier: "premium",
+      avatar: null,
+      createdAt: new Date()
+    }).returning();
+
+    // Create sample leads
+    const leads_data = [
+      {
+        referrerId: referrerUsers[0].id,
+        customerName: "Michael Thompson",
+        customerEmail: "michael.thompson@email.com",
+        service: "Home Renovation", 
+        value: "2450.00",
+        status: "pending",
+        businessName: "Home Pro Services",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        referrerId: referrerUsers[1].id,
+        customerName: "Rebecca Wilson",
+        customerEmail: "rebecca.wilson@email.com",
+        service: "Kitchen Remodeling",
+        value: "5800.00", 
+        status: "approved",
+        businessName: "Kitchen Masters",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        referrerId: referrerUsers[2].id,
+        customerName: "James Parker",
+        customerEmail: "james.parker@email.com",
+        service: "Bathroom Remodel",
+        value: "3200.00",
+        status: "approved", 
+        businessName: "Bath Renovations Co",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        referrerId: referrerUsers[3].id,
+        customerName: "Sophia Garcia",
+        customerEmail: "sophia.garcia@email.com",
+        service: "Landscaping",
+        value: "1850.00",
+        status: "rejected",
+        businessName: "Green Thumb Landscaping",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        referrerId: referrerUsers[4].id,
+        customerName: "Daniel Martinez", 
+        customerEmail: "daniel.martinez@email.com",
+        service: "Roof Repair",
+        value: "2100.00",
+        status: "pending",
+        businessName: "Roof Masters",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ];
+
+    const createdLeads = await db.insert(leads).values(leads_data).returning();
+
+    // Create sample campaigns
+    const campaigns_data = [
+      {
+        businessId: businessUser[0].id,
+        name: "Summer Sale Referrals",
+        description: "Promote our summer home improvement services",
+        serviceArea: "home-services",
+        rewardPerConversion: "25.00",
+        maxBudget: "5000.00",
+        startDate: new Date("2023-06-01"),
+        endDate: new Date("2023-07-31"),
+        postcode: { start: "10001", end: "10099" },
+        status: "active",
+        budgetUsed: "750.00",
+        leads: 12,
+        conversions: 8,
+        createdAt: new Date()
+      },
+      {
+        businessId: businessUser[0].id,
+        name: "Tech Product Launch",
+        description: "New technology services campaign", 
+        serviceArea: "technology",
+        rewardPerConversion: "40.00",
+        maxBudget: "10000.00",
+        startDate: new Date("2023-08-01"),
+        endDate: new Date("2023-09-15"),
+        postcode: { start: "20001", end: "20099" },
+        status: "active",
+        budgetUsed: "1200.00",
+        leads: 18,
+        conversions: 12,
+        createdAt: new Date()
+      }
+    ];
+
+    const createdCampaigns = await db.insert(campaigns).values(campaigns_data).returning();
+
+    // Create sample disputes
+    const disputes_data = [
+      {
+        caseId: "DR-7829",
+        leadId: createdLeads[0].id,
+        businessId: businessUser[0].id,
+        referrerId: referrerUsers[0].id,
+        businessClaim: "Client was already in our database before referral",
+        referrerResponse: "Initial contact was made through my referral link",
+        status: "pending",
+        createdAt: new Date()
+      },
+      {
+        caseId: "DR-7831", 
+        leadId: createdLeads[1].id,
+        businessId: businessUser[0].id,
+        referrerId: referrerUsers[1].id,
+        businessClaim: "Referral code used after direct contact was established",
+        referrerResponse: "Client confirmed they found us through my social media campaign",
+        status: "pending",
+        createdAt: new Date()
+      }
+    ];
+
+    await db.insert(disputes).values(disputes_data);
+
+    // Create sample earnings
+    const earnings_data = [
+      {
+        referrerId: referrerUsers[0].id,
+        leadId: createdLeads[0].id,
+        campaignId: createdCampaigns[0].id,
+        amount: "245.00",
+        status: "pending",
+        createdAt: new Date()
+      },
+      {
+        referrerId: referrerUsers[1].id,
+        leadId: createdLeads[1].id,
+        campaignId: createdCampaigns[0].id,
+        amount: "580.00", 
+        status: "paid",
+        createdAt: new Date(),
+        paidAt: new Date()
+      },
+      {
+        referrerId: referrerUsers[2].id,
+        leadId: createdLeads[2].id,
+        campaignId: createdCampaigns[1].id,
+        amount: "320.00",
+        status: "paid",
+        createdAt: new Date(),
+        paidAt: new Date()
+      }
+    ];
+
+    await db.insert(earnings).values(earnings_data);
+
+    // Create sample activities
+    const activities_data = [
+      {
+        userId: adminUser[0].id,
+        type: "new_referrer",
+        title: "New referrer joined the network",
+        description: "David Smith registered through the affiliate program",
+        metadata: {},
+        createdAt: new Date()
+      },
+      {
+        userId: adminUser[0].id,
+        type: "payout_processed", 
+        title: "Payout processed for October earnings",
+        description: "$45,230 distributed to 124 referrers",
+        metadata: {},
+        createdAt: new Date()
+      }
+    ];
+
+    await db.insert(activities).values(activities_data);
+
+    console.log("Sample data initialization completed successfully");
+  } catch (error) {
+    console.error("Error initializing sample data:", error);
+  }
+}
+
 export const storage = new DatabaseStorage();
+
+// Initialize sample data when module loads
+initializeSampleData();
