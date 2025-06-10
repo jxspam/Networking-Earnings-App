@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Layout from "@/components/Layout";
 import Dashboard from "@/pages/Dashboard";
+import EnhancedDashboard from "@/pages/EnhancedDashboard";
 import DisputeResolution from "@/pages/DisputeResolution";
 import Campaigns from "@/pages/Campaigns";
 import CreateOffer from "@/pages/CreateOffer";
@@ -14,14 +15,16 @@ import MyNetwork from "@/pages/MyNetwork";
 import ShareReferral from "@/pages/ShareReferral";
 import ReferralHistory from "@/pages/ReferralHistory";
 import Earnings from "@/pages/Earnings";
+import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/dashboard" component={Dashboard} />
+    <Switch>
+      <Route path="/login" component={Login} />
+      <Layout>
+        <Route path="/" component={EnhancedDashboard} />
+        <Route path="/dashboard" component={EnhancedDashboard} />
         <Route path="/network" component={MyNetwork} />
         <Route path="/share-referral" component={ShareReferral} />
         <Route path="/referral-history" component={ReferralHistory} />
@@ -32,8 +35,8 @@ function Router() {
         <Route path="/create-offer" component={CreateOffer} />
         <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
-      </Switch>
-    </Layout>
+      </Layout>
+    </Switch>
   );
 }
 
