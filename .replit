@@ -1,6 +1,9 @@
 modules = ["nodejs-20", "web", "postgresql-16"]
-run = "DATABASE_URL=postgresql://replit:password@localhost:5432/replit npm run dev"
+run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
+
+[env]
+DATABASE_URL = "postgresql://replit:password@localhost:5432/replit"
 
 [nix]
 channel = "stable-24_05"
@@ -28,7 +31,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "DATABASE_URL=postgresql://replit:password@localhost:5432/replit npm run dev"
+args = "npm run dev"
 waitForPort = 5000
 
 [[ports]]
