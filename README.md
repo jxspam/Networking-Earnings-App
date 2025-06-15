@@ -5,6 +5,7 @@ A comprehensive referral management platform built with React, Node.js, and Post
 ## Features
 
 ### For Referrers
+
 - **Enhanced Dashboard**: Real-time analytics with performance charts and recent referrals
 - **Lead Management**: Track referral status and earnings
 - **Earnings Tracking**: View pending and paid earnings with withdrawal functionality
@@ -12,12 +13,14 @@ A comprehensive referral management platform built with React, Node.js, and Post
 - **Dispute Resolution**: Submit and track dispute cases
 
 ### For Businesses
+
 - **Campaign Creation**: Create and manage referral campaigns
 - **Lead Tracking**: Monitor incoming referrals and conversions
 - **Payment Management**: Process referrer payouts
 - **Performance Analytics**: Track campaign ROI and conversion rates
 
 ### For Administrators
+
 - **Admin Overview**: Comprehensive dashboard with system analytics
 - **User Management**: Monitor referrer and business accounts
 - **Dispute Management**: Review and resolve disputes
@@ -26,6 +29,7 @@ A comprehensive referral management platform built with React, Node.js, and Post
 ## Technology Stack
 
 ### Frontend
+
 - **React 18** with TypeScript
 - **Tailwind CSS** for styling
 - **Shadcn/ui** component library
@@ -34,6 +38,7 @@ A comprehensive referral management platform built with React, Node.js, and Post
 - **Wouter** for routing
 
 ### Backend
+
 - **Node.js** with Express
 - **TypeScript** for type safety
 - **Drizzle ORM** for database operations
@@ -41,6 +46,7 @@ A comprehensive referral management platform built with React, Node.js, and Post
 - **Passport.js** for authentication
 
 ### Database
+
 - **PostgreSQL** with comprehensive schema
 - Real-time data synchronization
 - Proper relationships and constraints
@@ -60,6 +66,7 @@ The application uses a well-structured PostgreSQL database with the following en
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
 - PostgreSQL database
 - Environment variables configured
@@ -67,17 +74,20 @@ The application uses a well-structured PostgreSQL database with the following en
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/jxspam/Networking-Earnings-App.git
 cd Networking-Earnings-App
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 # Database configuration
 DATABASE_URL=your_postgresql_connection_string
@@ -89,11 +99,13 @@ PGDATABASE=your_db_name
 ```
 
 4. Initialize the database:
+
 ```bash
 npm run db:push
 ```
 
 5. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -122,37 +134,45 @@ The application will be available at `http://localhost:5000`
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/login` - User authentication
 - `POST /api/register` - User registration
 - `POST /api/logout` - User logout
 
 ### Users
+
 - `GET /api/users` - Get all users
 - `GET /api/user` - Get current user
 
 ### Leads
+
 - `GET /api/leads` - Get all leads
 - `POST /api/leads` - Create new lead
 - `PUT /api/leads/:id` - Update lead
 
 ### Campaigns
+
 - `GET /api/campaigns` - Get all campaigns
 - `POST /api/campaigns` - Create campaign
 
 ### Earnings
+
 - `GET /api/earnings` - Get all earnings
 - `PUT /api/earnings/:id` - Update earning status
 
 ### Disputes
+
 - `GET /api/disputes` - Get all disputes
 - `POST /api/disputes` - Create dispute
 
 ### Analytics
+
 - `GET /api/analytics/overview` - System analytics
 
 ## Features Implemented
 
 ### User Interface
+
 - Professional blue gradient header design
 - Responsive layout for all screen sizes
 - Status badges with color-coded indicators
@@ -160,18 +180,21 @@ The application will be available at `http://localhost:5000`
 - Modern card-based layout
 
 ### Authentication System
+
 - Login/registration with role selection
 - Session management
 - Protected routes
 - User role-based access control
 
 ### Data Management
+
 - Real-time data fetching from PostgreSQL
 - Comprehensive CRUD operations
 - Data validation and error handling
 - Automatic sample data initialization
 
 ### Business Logic
+
 - Lead conversion tracking
 - Earnings calculation
 - Campaign performance metrics
@@ -180,6 +203,7 @@ The application will be available at `http://localhost:5000`
 ## Development
 
 ### Database Operations
+
 ```bash
 # Push schema changes
 npm run db:push
@@ -192,6 +216,7 @@ npx drizzle-kit studio
 ```
 
 ### Code Quality
+
 - TypeScript for type safety
 - ESLint configuration
 - Consistent code formatting
@@ -200,6 +225,7 @@ npx drizzle-kit studio
 ## Deployment
 
 The application is designed to work with:
+
 - **Replit Deployments** (recommended)
 - **Vercel** for frontend hosting
 - **Railway** or **Supabase** for PostgreSQL
