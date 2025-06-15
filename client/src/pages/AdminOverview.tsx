@@ -100,6 +100,21 @@ export default function AdminOverview() {
       </div>
     );
   }
+  // Get top performers from users with highest earnings
+  const topPerformers = users.map(user => {
+    const userEarningsData = earnings.filter(earning => earning.referrerId === user.id);
+    const userLeads = leads.filter(lead => lead.referrerId === user.id);
+    const totalEarnings = userEarningsData.reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
+    const totalGenerated = userLeads.reduce((sum, lead) => sum + parseFloat(lead.value), 0);
+    
+    return {
+      name: `${user.firstName} ${user.lastName}`,
+      avatar: user.avatar || `https://images.unsplash.com/photo-${1400000000000 + user.id}?w=32&h=32&fit=crop&crop=face`,
+      referrals: userLeads.length,
+      generated: totalGenerated,
+      earnings: totalEarnings
+    };
+  }).sort((a, b) => b.earnings - a.earnings).slice(0, 4);
 
   // Calculate analytics from actual data
   const analyticsData: AnalyticsData = {
@@ -156,22 +171,7 @@ export default function AdminOverview() {
       };
     })
   ];
-
-  // Get top performers from users with highest earnings
-  const userEarnings = users.map(user => {
-    const userEarningsData = earnings.filter(earning => earning.referrerId === user.id);
-    const userLeads = leads.filter(lead => lead.referrerId === user.id);
-    const totalEarnings = userEarningsData.reduce((sum, earning) => sum + parseFloat(earning.amount), 0);
-    const totalGenerated = userLeads.reduce((sum, lead) => sum + parseFloat(lead.value), 0);
-    
-    return {
-      name: `${user.firstName} ${user.lastName}`,
-      avatar: user.avatar || `https://images.unsplash.com/photo-${1400000000000 + user.id}?w=32&h=32&fit=crop&crop=face`,
-      referrals: userLeads.length,
-      generated: totalGenerated,
-      earnings: totalEarnings
-    };
-  }).sort((a, b) => b.earnings - a.earnings).slice(0, 4);
+  // This calculation has been moved up before the JSX
 
   // Map activities from database
   const recentActivities = activities.slice(0, 4).map(activity => ({

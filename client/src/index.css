@@ -182,7 +182,7 @@
   }
 
   .table-row {
-    @apply border-b border-gray-50 hover:bg-gray-25 transition-colors duration-150;
+    @apply border-b border-gray-50 hover:bg-gray-100 transition-colors duration-150;
   }
 
   .table-cell {
